@@ -1,0 +1,47 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    margin: 0 auto;
+
+    width: 800px;
+    min-height: 800px;
+}
+
+.grid {
+    margin: 10px auto;
+
+    width: 600px;
+    height: 600px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.row {
+    width: 600px;
+    height: 200px;
+
+    border-bottom: 1px solid black;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.col {
+    display: inline-block;
+
+    width: 32.7%;
+    height: 200px;
+
+    border-right: 1px solid black;
+}
+
+.col:last-child {
+    border-right: none;
+    margin-right: none;
+}
+

@@ -10,8 +10,8 @@ var ui = (function($, io) {
 
         // socket listen on value change
 
-        socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg));
+        socket.on('opponentcellfilled', function(data){
+
         });
 
         // socket listen on gameover
@@ -31,9 +31,16 @@ var ui = (function($, io) {
         $doc.on('click', '.col', function (e) {
             e.preventDefault();
 
+            var $this = $(this),
+                col = $this.data('number'),
+                row = $this.parent().data('number');
             // set value for the cell
+
             // socket emit a value change for the cell
-            // socket.emit('');
+            socket.emit('cellfilled', {
+                cellRow: row,
+                cellCol: col
+            });
         });
 
         $doc.on('click', '.score', function (e) {
