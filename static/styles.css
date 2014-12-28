@@ -24,6 +24,8 @@ html, body {
     width: 600px;
     height: 200px;
 
+    text-align: center;
+
     border-bottom: 1px solid black;
 }
 
@@ -32,16 +34,30 @@ html, body {
 }
 
 .col {
-    display: inline-block;
+    box-sizing: border-box;
+    float: left;
 
     width: 32.7%;
     height: 200px;
 
     border-right: 1px solid black;
+
+    text-align: center;
+    padding-top: 17px;
+
+}
+
+.col:after {
+    content: '';
+    display: block;
+    clear: left;
 }
 
 .col:last-child {
     border-right: none;
-    margin-right: none;
 }
 
+img {
+    width: 160px;
+    height: 160px;
+}

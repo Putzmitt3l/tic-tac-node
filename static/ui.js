@@ -34,7 +34,9 @@ var ui = (function($, io) {
             var $this = $(this),
                 col = $this.data('number'),
                 row = $this.parent().data('number');
+
             // set value for the cell
+            $this.html('<img src="' + './images/circle.svg' + '" />');
 
             // socket emit a value change for the cell
             socket.emit('cellfilled', {
