@@ -6,32 +6,39 @@ var ui = (function($, io) {
     // Event names store
     // TODO: move socketEvents object in separate file
     var socketEvents = {
-        listen: {
-            opponentCell: 'opponentcellfilled',
-            gameEnd: 'gameover'
+            listen: {
+                playerconnected: 'newplayer',
+                opponentCell: 'opponentcellfilled',
+                gameEnd: 'gameover'
+            },
+            emit: {
+                playerCell: 'cellfilled'
+            }
         },
-        emit: {
-            playerCell: 'cellfilled'
-        }
-    };
-
-    var uiClasses = {
-        cell: {
-            taken: 'taken',
-            disabled: 'disable-cell'
-        }
-    }
+        uiClasses = {
+            cell: {
+                taken: 'taken',
+                disabled: 'disable-cell'
+            }
+        },
+        playerId = null;
 
     ui.init = function() {
         var socket = io();
 
         attachClickHandlers(socket);
 
-        // socket listen on value change
+        socket.on(socketEvents.listen.playerconnected, function (data) {
+            playerId = data.playerId;
+            console.log('playerId: ' + playerId);
+            // TODO: add a field in UI for the playerId
+            // for providing a multiplayer flow
+        });
 
-        socket.on(socketEvents.listen.opponentCell, function(data){
+        // socket listen on value change
+        socket.on(socketEvents.listen.opponentCell, function (data){
             // set server cell filled
-            // enable cells
+            enableCells();
         });
 
         // socket listen on gameover
@@ -66,7 +73,6 @@ var ui = (function($, io) {
                     cellRow: row,
                     cellCol: col
                 });
-
             }
         });
 

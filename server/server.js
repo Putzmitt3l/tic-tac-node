@@ -1,8 +1,10 @@
 var express = require('express');
+var path = require('path');
+var uuid = require('node-uuid');
+
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var path = require('path');
 
 var paths = {
     pagePath: path.normalize(__dirname + '/../static/index.html'),
@@ -20,16 +22,20 @@ http.listen(3000, function(){
 });
 
 io.on('connection', function(socket) {
-    console.log('a user connected');
+    socket.socketId = uuid();
+    console.log('a user connected: ' + socket.socketId);
 
-    // io.emit('new user',)
+    io.emit('newplayer', { playerId: socket.socketId });
 
-    socket.on('disconnect', function() {
-        console.log('user disconnected');
-    });
+    // socket.on('disconnect', function() {
+    //     console.log('user disconnected');
+    // });
 
-    socket.on('chat message', function(msg) {
-        // console.log('message: ' + msg);
-        io.emit('chat message', msg);
+    socket.on('cellfilled', function(cellInfo) {
+        // console.log('message: ' + cellInfo);
+        // io.emit('chat message', cellInfo);
+        console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
+        // AI logic
+        io.emit('opponentcellfilled');
     });
 });
