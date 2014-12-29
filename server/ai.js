@@ -1,14 +1,16 @@
 // later on an algorithm option can be added
-var algorithm = require('./minimax');
+var algorithm = require('./algo/minimax');
 
 function AiException (message) {
     this.name = 'AiException';
     this.message = message || 'Unhandled AiException occurred.';
 };
 
-function Ai (id, algorithm) {
+function Ai (id, algorithm, cellValue) {
     this._id = id;
     this._algorithm = algorithm;
+    this._nextMove = {};
+    this._cellValue = cellValue;
 
     addInstanceToDictionary(this);
 };
@@ -53,9 +55,12 @@ Ai.removeInstanceFromDictionary = function (instanceId) {
 // EOF Static Ai functions //
 /////////////////////////////
 
+Ai.prototype.makeAssessment = function (gameState) {
+    this._nextMove = this._algorithm.generateNextMove(gameState, this._cellValue);
+};
 
+Ai.prototype.makeMove = function () {
+    return this._nextMove;
+};
 
-// take Ai state and make assessment
-
-// make move
 module.exports = Ai;
