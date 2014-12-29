@@ -11,6 +11,10 @@ function Game (id) {
     addInstanceToDictionary(this);
 };
 
+///////////////////////////
+// Static Game functions //
+///////////////////////////
+
 function addInstanceToDictionary (instance) {
     if(Game._instancesDictionary === undefined) {
         Game._instancesDictionary = {};
@@ -43,6 +47,10 @@ Game.removeInstanceFromDictionary = function (instanceId) {
     return removedInstance;
 }
 
+////////////////////////////////
+// EOF Static Game functions  //
+////////////////////////////////
+
 Game.prototype.updateState = function (ply, filledCell) {
     if(this._ply !== ply) {
         throw new GameException('Unauthorized player move');
@@ -58,6 +66,11 @@ Game.prototype.updateState = function (ply, filledCell) {
     }
 };
 
+Game.prototype.checkForGameEnd = function () {
+    // TODO: check if any of the win positions are present
+    // check if all the cells are filled and call draw
+}
+
 Game.prototype.getId = function () {
     return this._id;
 };
@@ -70,7 +83,8 @@ Game.prototype.getState = function () {
     return this._matrix;
 };
 
+// TODO: add player uuids
+// TODO: add history of moves by players
 
 module.exports = Game;
 
-// TODO: add player uuids
