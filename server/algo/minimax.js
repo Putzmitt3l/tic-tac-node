@@ -1,96 +1,57 @@
-function minimax (board) {
+'use strict';
+var euristicFunc = require('./euristics'); // helper function
+var generateStateTree = require('./generatetree');
 
-};
+function miniMax(gameState, cellValue, maximizingPlayer) {
+    var childStates = gameState.getChildren();
+    var bestValue;
+    var currentValue;
 
-function euristicFunc (board, cellValue) {
-    var euristicValue = 0;
-    var boardDimension = 3;
-    for (var i = 0; i < boardDimension; i++) {
-        euristicValue += checkRow(board, i, cellValue);
-        euristicValue += checkCol(board, i, cellValue);
-    };
+    if (childStates.length === 0) {
+        var stateAssessment = euristicFunc(gameState.getBoardState(), cellValue);
+        gameState.assessment = stateAssessment;
+        return stateAssessment;
+    }
 
-    euristicValue += checkDiagonal(board, cellValue);
-    euristicValue += checkDiagonal(board, cellValue, true);
+    if (maximizingPlayer) {
+        bestValue = Number.NEGATIVE_INFINITY;
 
-    return euristicValue;
-};
-
-function checkRow (board, row, cell) {
-    return check(board, row, cell)
-};
-
-function checkCol (board, col, cell) {
-    return check(board, col, cell, true);
-};
-
-function check (board, index, cell, isCol) {
-    var euriCheckVal = 0;
-    if(!!isCol) {
-        // we are checking a row
-        for (var i = 0; i < 3; i++) {
-            if (board[index][i] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[index][i] !== cell && board[index][i] !== 0) {
-                euriCheckVal--;
-            }
+        for (var i = 0; i < childStates.length; i++) {
+            currentValue = miniMax(childStates[i], cellValue, false);
+            bestValue = Math.max(bestValue, currentValue);
         };
+
+        return bestValue;
     }
     else {
-        // we are checking a column
-        for (var i = 0; i < 3; i++) {
-            if (board[i][index] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[i][index] !== cell && board[i][index] !== 0) {
-                euriCheckVal--;
-            }
+        bestValue = Number.POSITIVE_INFINITY;
+
+        for (var i = 0; i < childStates.length; i++) {
+            currentValue = miniMax(childStates[i], cellValue, true);
+            bestValue = Math.min(bestValue, currentValue);
         };
+
+        return bestValue;
     }
-    // possible return values in interval [-2, 2]
-    return euriCheckVal;
 }
 
-function checkDiagonal (board, cell, checkOpposite) {
-    var euriCheckVal = 0;
-    if(!!checkOpposite) {
-        // check normal diagonal
-        for (var i = 0; i < 3; i++) {
-            if (board[i][i] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[i][i] !== cell && board[i][i] !== 0) {
-                euriCheckVal--;
-            }
-        };
-
-    }
-    else {
-        // check reverse diagonal
-        for (var i = 2; i >= 0; i--) {
-            var j = i -2;
-            if(j < 0) {
-                j = -j;
-            }
-            if (board[i][j] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[i][j] !== cell && board[i][j] !== 0) {
-                euriCheckVal--;
+module.exports = {
+    generateNextMove: function (board, cellValue) {
+        var currentMoveCell = cellValue;
+        var nextMoveCell;
+        if(currentMoveCellValue === 1) {
+            nextMoveCell = 2;
+        }
+        else {
+            nextMoveCell = 1;
+        }
+        var stateTree = generatetree(board, currentMoveCell, nextMoveCell);
+        var bestMove = miniMax(stateTree, cellValue, true);
+        var nextMoveStates = stateTree.getChildren();
+        for (var i = 0; i < nextMoveStates.length; i++) {
+            if(nextMoveStates[i] === bestMove) {
+                return nextMoveStates[i].move;
             }
         };
     }
-    return euriCheckVal;
-}
-
-
-/*
-    TODO: add more tests
-
-    sample Board tests for the euristic function
-    var board1 = [[1,0,0],[0,0,0],[0,0,0]]; // returns 3
-    var board2 = [[1,0,0],[0,1,0],[0,0,0]]; // returns 7
-    var board3 = [[1,0,0],[0,0,0],[0,0,2]]; // returns 0
-    var board4 = [[1,0,0],[0,2,0],[0,0,2]]; // returns -4
-*/
+};

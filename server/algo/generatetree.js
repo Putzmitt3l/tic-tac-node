@@ -22,12 +22,15 @@ function generateChildrenForStateNode (stateNode, cellValue) {
     var freeCells = getFreeCells(stateNode.getBoardState());
     var currentFreeCell;
     var boardCopy;
+    var newState;
 
     for (var i = 0; i < freeCells.length; i++) {
         boardCopy = copyBoard(stateNode.getBoardState());
         currentFreeCell = freeCells[i];
         boardCopy[currentFreeCell.cellRow][currentFreeCell.cellCol] = cellValue;
-        stateNode.addChild(new StateNode(boardCopy));
+        newState = new StateNode(boardCopy);
+        newState.move = currentFreeCell;
+        stateNode.addChild(newState);
     };
 }
 
