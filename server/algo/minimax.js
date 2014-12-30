@@ -20,6 +20,7 @@ function miniMax(gameState, cellValue, maximizingPlayer) {
             currentValue = miniMax(childStates[i], cellValue, false);
             bestValue = Math.max(bestValue, currentValue);
         };
+        gameState.assessment = bestValue;
 
         return bestValue;
     }
@@ -30,6 +31,7 @@ function miniMax(gameState, cellValue, maximizingPlayer) {
             currentValue = miniMax(childStates[i], cellValue, true);
             bestValue = Math.min(bestValue, currentValue);
         };
+        gameState.assessment = bestValue;
 
         return bestValue;
     }
@@ -39,17 +41,17 @@ module.exports = {
     generateNextMove: function (board, cellValue) {
         var currentMoveCell = cellValue;
         var nextMoveCell;
-        if(currentMoveCellValue === 1) {
+        if(currentMoveCell === 1) {
             nextMoveCell = 2;
         }
         else {
             nextMoveCell = 1;
         }
-        var stateTree = generatetree(board, currentMoveCell, nextMoveCell);
+        var stateTree = generateStateTree(board, currentMoveCell, nextMoveCell);
         var bestMove = miniMax(stateTree, cellValue, true);
         var nextMoveStates = stateTree.getChildren();
         for (var i = 0; i < nextMoveStates.length; i++) {
-            if(nextMoveStates[i] === bestMove) {
+            if(nextMoveStates[i].assessment === bestMove) {
                 return nextMoveStates[i].move;
             }
         };

@@ -60,7 +60,10 @@ Ai.prototype.makeAssessment = function (gameState) {
 };
 
 Ai.prototype.makeMove = function () {
-    return this._nextMove;
+    return {
+        coordinates: this._nextMove,
+        value: this.__cellValue
+    };
 };
 
 module.exports = Ai;
