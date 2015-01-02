@@ -6,8 +6,11 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var initialiser = require('./initialiser');
+
 var paths = {
     pagePath: path.normalize(__dirname + '/../static/index.html'),
+    gamePagePath: path.normalize(__dirname + '/../static/game.html'),
     resourcePath: path.normalize(__dirname + '/../static/')
 };
 
@@ -15,6 +18,10 @@ app.use(express.static(paths.resourcePath));
 
 app.get('/', function(req, res){
     res.sendFile(paths.pagePath);
+});
+
+app.get('/game', function(req, res) {
+    res.sendFile(paths.gamePagePath);
 });
 
 http.listen(3000, function(){

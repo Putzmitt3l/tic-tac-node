@@ -1,39 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tic-Tac-Toe</title>
+    <title>Tic-Tac-Node</title>
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <div class="wrapper">
-        <div class="grid">
-            <div class="row" data-number="0">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
+    <div class="wrapper blue-color-back white-color text-center">
+        <h1>Tic Tac Node</h1>
+        <div class="game-settings">
+            <div class="game-type">
+                <select>
+                    <option value="ai">Versus AI</option>
+                    <option value="multi">Versus Actual Person</option>
+                </select>
             </div>
-            <div class="row" data-number="1">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
+            <div class="info">
+                <h3>For multiplayer mode, copy and send the url to your rival player.</h3>
             </div>
-            <div class="row" data-number="2">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
-            </div>
-        </div>
-        <div class="score">
-
-        </div>
-        <div class="controls">
-
+            <button class="start-game white-color-back blue-color big-btn">Start Game</button>
         </div>
     </div>
-    <script src="ui.js"></script>
+
+    <script src="menu-ui.js"></script>
 </body>
 </html>
