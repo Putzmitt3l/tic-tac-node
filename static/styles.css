@@ -6,12 +6,22 @@ html, body {
 .wrapper {
     margin: 0 auto;
 
+    padding: 20px;
+
     width: 800px;
-    min-height: 800px;
+    min-height: 710px;
 }
 
 h1 {
     margin-top: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.game-settings {
+    margin-top: 40px;
 }
 
 .game-type select {
@@ -34,7 +44,7 @@ h1 {
     width: 600px;
     height: 600px;
 
-    border: 1px solid black;
+    border: 2px solid black;
     border-radius: 10px;
 }
 
@@ -44,7 +54,7 @@ h1 {
 
     text-align: center;
 
-    border-bottom: 1px solid black;
+    border-bottom: 2px solid black;
 }
 
 .row:last-child {
@@ -58,7 +68,7 @@ h1 {
     width: 32.7%;
     height: 200px;
 
-    border-right: 1px solid black;
+    border-right: 2px solid black;
 
     text-align: center;
     padding-top: 17px;

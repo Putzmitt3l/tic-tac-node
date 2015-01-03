@@ -7,11 +7,13 @@ var ui = (function($, io) {
     // TODO: move socketEvents object in separate file
     var socketEvents = {
             listen: {
-                playerconnected: 'newplayer',
-                opponentCell: 'opponentcellfilled',
-                gameEnd: 'gameover'
+                gameStarted: 'gamestarted',
+                gameEnd: 'gameover',
+                playerconnected: 'playerconnected',
+                opponentCell: 'opponentcellfilled'
             },
             emit: {
+                startGame: 'startgame',
                 playerCell: 'cellfilled'
             }
         },
@@ -21,7 +23,9 @@ var ui = (function($, io) {
                 disabled: 'disable-cell'
             }
         },
-        playerId = null;
+        playerId = null,
+        playerType = null,
+        gameId = null;
 
     ui.init = function() {
         var socket = io();
@@ -30,9 +34,20 @@ var ui = (function($, io) {
 
         socket.on(socketEvents.listen.playerconnected, function (data) {
             playerId = data.playerId;
+
             console.log('playerId: ' + playerId);
-            // TODO: add a field in UI for the playerId
-            // for providing a multiplayer flow
+        });
+
+        socket.on(socketEvents.listen.gameStarted, function (gameInfo) {
+            if(gameInfo.playerOne === playerId) {
+                playerType = 'x';
+            }
+            else {
+                playerType = 'o';
+            }
+            gameId = gameInfo.gameId;
+            console.log('gameId: ' + gameId);
+            console.log('palyerType: ' + playerType);
         });
 
         // socket listen on value change
@@ -54,6 +69,20 @@ var ui = (function($, io) {
 
     function attachClickHandlers (socket) {
         var $doc = $(document);
+
+        $doc.on('click', '.start-game', function (e) {
+            e.preventDefault();
+            var option = $('select').val();
+
+            showGrid();
+            hideMenu();
+
+            socket.emit(socketEvents.emit.startGame, {
+                playerId: playerId
+            });
+            // TODO: change window.location after adding ng-rock tool
+            // change the quesry string to be generated from select option
+        });
 
         $doc.on('click', '.col', function (e) {
             e.preventDefault();
@@ -83,6 +112,22 @@ var ui = (function($, io) {
         $doc.on('click', '.controls', function (e) {
 
         });
+    }
+
+    function hideGrid () {
+        $('.grid').addClass('hidden');
+    }
+
+    function showGrid () {
+        $('.grid').removeClass('hidden');
+    }
+
+    function hideMenu () {
+        $('.game-settings').addClass('hidden');
+    }
+
+    function showMenu () {
+        $('.game-settings').removeClass('hidden');
     }
 
     function setCellValue ($cell, cellValue) {
