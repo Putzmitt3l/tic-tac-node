@@ -1,15 +1,15 @@
 'use strict';
 // later on an algorithm option can be added
-var algorithm = require('./algo/minimax');
+var miniMaxAlgorithm = require('./algo/minimax');
 
 function AiException (message) {
     this.name = 'AiException';
     this.message = message || 'Unhandled AiException occurred.';
 };
 
-function Ai (id, algorithm, cellValue) {
+function Ai (id, cellValue, algorithm) {
     this._id = id;
-    this._algorithm = algorithm;
+    this._algorithm = algorithm || miniMaxAlgorithm;
     this._nextMove = {};
     this._cellValue = cellValue;
 

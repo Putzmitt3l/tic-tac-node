@@ -1,12 +1,14 @@
+var Ai = require('./ai');
+
 function PlayerException (message) {
     this.name = 'PlayerException';
     this.message = message || 'Unhandled PlayerException occurred.';
 }
 
-function Player (id, turnValue, bot) {
+function Player (id, turnValue, useBot) {
     this._id = id;
     this._ply = turnValue;
-    this._bot = (!!bot)? bot : null;
+    this._bot = (useBot)? new Ai(id, turnValue) : null;
 }
 
 Player.prototype.getGameState = function (gameStateBoard) {

@@ -8,9 +8,6 @@ var io = require('socket.io')(http);
 
 var Game = require('./game');
 var Player = require('./player');
-var AI = require('./ai');
-
-var initialiser = require('./initialiser');
 
 var paths = {
     pagePath: path.normalize(__dirname + '/../static/index.html'),
@@ -75,8 +72,7 @@ io.on('connection', function(socket) {
             game = new Game(gameId);
             playerOne = new Player(gameSettings.playerId, 'x');
             playerTwoId = uuid();
-            var bot = new AI(playerTwoId);
-            playerTwo = new Player(playerTwoId, 'o', bot);
+            playerTwo = new Player(playerTwoId, 'o', true); // use a AI to be a player
 
             game.addPlayer(playerOne);
             game.addPlayer(playerTwo);
@@ -92,8 +88,6 @@ io.on('connection', function(socket) {
                 playerOne: game.getPlayerOneId(),
                 playerTwo: game.getPlayerTwoId()
             });
-
-            console.log(Game.getInstanceFromDictionary(game.getId()));
         }
     })
 

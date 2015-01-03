@@ -82,7 +82,7 @@ Game.prototype.updateState = function (ply, filledCell) {
 Game.prototype.checkForGameEnd = function () {
     // TODO: check if any of the win positions are present
     // check if all the cells are filled and call draw
-}
+};
 
 Game.prototype.getId = function () {
     return this._id;
@@ -96,17 +96,25 @@ Game.prototype.getState = function () {
     return this._matrix;
 };
 
+Game.prototype.getPlayerOne = function () {
+    return this._players[0];
+};
+
+Game.prototype.getPlayerTwo = function () {
+    return this._players[1];
+}
+
 Game.prototype.getPlayerOneId = function () {
     return this._players[0].getId();
-}
+};
 
 Game.prototype.getPlayerTwoId = function () {
     return this._players[1].getId();
-}
+};
 
 Game.prototype.isReadyToStart = function () {
     return this._ready;
-}
+};
 
 // TODO: add history of moves by players
 
