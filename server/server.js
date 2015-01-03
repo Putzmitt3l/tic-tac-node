@@ -11,7 +11,6 @@ var Player = require('./player');
 
 var paths = {
     pagePath: path.normalize(__dirname + '/../static/index.html'),
-    gamePagePath: path.normalize(__dirname + '/../static/game.html'),
     resourcePath: path.normalize(__dirname + '/../static/')
 };
 
@@ -36,10 +35,6 @@ app.get('/', function(req, res){
     res.sendFile(paths.pagePath);
 });
 
-app.get('/game', function(req, res) {
-    res.sendFile(paths.gamePagePath);
-});
-
 http.listen(3000, function(){
     console.log('listening on 3000');
 });
@@ -57,9 +52,6 @@ io.on(socketEvents.listen.socketConnection, function(socket) {
         var gameId = null;
         var game = null;
 
-        var playerOneId = null;
-        var playerTwoId = null;
-
         var playerOne = null;
         var playerTwo = null;
 
@@ -68,19 +60,19 @@ io.on(socketEvents.listen.socketConnection, function(socket) {
                 // first player connects
                 gameId = uuid();
                 game = new Game(gameId);
-                playerOneId = uuid();
-                playerOne = new Player(playerOneId, 'x');
+                playerOne = new Player(socket.socketId, 'x');
                 game.addPlayer(playerOne);
 
                 socket.emit(socketEvents.emit.inviteopponent, {
                     gameId: gameId
                 });
+
+                socket.join(gameId);
             }
             else {
                 // second player connects
                 game = Game.getInstanceFromDictionary(gameSettings.gameId);
-                playerTwoId = uuid();
-                playerTwo = new Player(playerTwoId, 'o');
+                playerTwo = new Player(socket.socketId, 'o');
                 game.addPlayer(playerTwo);
 
                 socket.join(gameSettings.gameId);
@@ -89,8 +81,8 @@ io.on(socketEvents.listen.socketConnection, function(socket) {
         else {
             gameId = uuid();
             game = new Game(gameId);
-            playerOne = new Player(gameSettings.playerId, 'x');
-            playerTwoId = uuid();
+            playerOne = new Player(socket.socketId, 'x');
+            var playerTwoId = uuid();
             playerTwo = new Player(playerTwoId, 'o', true); // use a AI to be a player
 
             game.addPlayer(playerOne);
@@ -114,11 +106,11 @@ io.on(socketEvents.listen.socketConnection, function(socket) {
     //     console.log('user disconnected');
     // });
 
-    socket.on(socketEvents.listen.cellFilled, function(cellInfo) {
-        console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
+    socket.on(socketEvents.listen.cellFilled, function(plyInfo) {
+        // console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
         // AI logic
-        io.sockets.emit(socketEvents.emit.opponentCell, {
-
+        socket.broadcast.emit(socketEvents.emit.opponentCell, {
+            opponentCell: plyInfo.cellInfo
         });
     });
 });

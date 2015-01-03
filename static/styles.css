@@ -5,7 +5,6 @@ html, body {
 
 .wrapper {
     margin: 0 auto;
-    position: relative;
 
     padding: 20px;
 
@@ -13,7 +12,55 @@ html, body {
     min-height: 710px;
 }
 
-.wrapper.overlay:after {
+h1 {
+    margin-top: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.game-settings {
+    margin-top: 40px;
+}
+
+.game-id-holder {
+    margin: 10px auto;
+}
+
+.game-id-holder input {
+    height: 20px;
+    width: 250px;
+    text-align: center;
+}
+
+.game-type select {
+    font-size: 20px;
+    background-color: #fff;
+    color: #4183c4;
+    margin-bottom: 10px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.disable-cell {
+    pointer-events: none;
+}
+
+.grid {
+    position: relative;
+    margin: 10px auto;
+
+    width: 600px;
+    height: 600px;
+
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+.grid.overlay:after {
     display: block;
     content: 'LoAdIng!';
     position: absolute;
@@ -31,41 +78,6 @@ html, body {
     text-align: center;
 }
 
-h1 {
-    margin-top: 0;
-}
-
-.hidden {
-    display: none;
-}
-
-.game-settings {
-    margin-top: 40px;
-}
-
-.game-type select {
-    font-size: 20px;
-    background-color: #fff;
-    color: #4183c4;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.disable-cell {
-    pointer-events: none;
-}
-
-.grid {
-    margin: 10px auto;
-
-    width: 600px;
-    height: 600px;
-
-    border: 2px solid black;
-    border-radius: 10px;
-}
 
 .row {
     width: 600px;

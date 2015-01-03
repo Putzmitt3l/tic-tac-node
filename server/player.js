@@ -12,7 +12,7 @@ function Player (id, turnValue, useBot) {
 }
 
 Player.prototype.getGameState = function (gameStateBoard) {
-    if(!this._bot) {
+    if(!!this._bot) {
         // delegate cell dicision to bot
     }
     else {

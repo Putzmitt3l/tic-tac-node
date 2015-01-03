@@ -25,7 +25,9 @@ var ui = (function($, io) {
             }
         },
         playerId = null,
+        opponentId = null,
         playerType = null,
+        opponentType = null,
         gameId = null;
 
     ui.init = function() {
@@ -39,16 +41,28 @@ var ui = (function($, io) {
             console.log('playerId: ' + playerId);
         });
 
+        socket.on(socketEvents.listen.inviteopponent, function (invite) {
+            fillInviteField(invite.gameId);
+        });
+
         socket.on(socketEvents.listen.gameStarted, function (gameInfo) {
             if(gameInfo.playerOne === playerId) {
                 playerType = 'x';
+                opponentId = gameInfo.playerTwo;
+                opponentType = 'o';
             }
             else {
                 playerType = 'o';
+                opponentId = gameInfo.playerOne;
+                opponentType = 'x';
             }
             gameId = gameInfo.gameId;
+
             console.log('gameId: ' + gameId);
             console.log('palyerType: ' + playerType);
+
+            console.log('playerOneId: ' + gameInfo.playerOne);
+            console.log('playerTwoId: ' + gameInfo.playerTwo);
 
             removeOverlay();
         });
@@ -56,6 +70,8 @@ var ui = (function($, io) {
         // socket listen on value change
         socket.on(socketEvents.listen.opponentCell, function (data){
             // set server cell filled
+            var $cell = getCellElement(data.opponentCell);
+            setCellValue($cell, opponentType);
             enableCells();
         });
 
@@ -75,7 +91,8 @@ var ui = (function($, io) {
 
         $doc.on('click', '.start-game', function (e) {
             e.preventDefault();
-            var option = $('select').val();
+            var option = $('select').val(),
+                $gameId = $('#multi-game-id-paste');
 
             showGrid();
             hideMenu();
@@ -84,8 +101,19 @@ var ui = (function($, io) {
 
             socket.emit(socketEvents.emit.startGame, {
                 playerId: playerId,
-                multiplayer: (option === 'multi')? true : undefined
+                multiplayer: (option === 'multi')? true : undefined,
+                gameId: ($gameId.val() !== '')? $gameId.val(): undefined
             });
+        });
+
+        $doc.on('change', 'select', function (e) {
+            var $this = $(this);
+            if($this.find(':selected').val() === 'multi') {
+                showMultiplayerGameIdField()
+            }
+            else {
+                hideMultiplayerGameIdField();
+            }
         });
 
         $doc.on('click', '.col', function (e) {
@@ -98,13 +126,16 @@ var ui = (function($, io) {
 
             // set value for the cell
             if(!isTaken) {
-                setCellValue($this, 'cross');
+                setCellValue($this, playerType);
                 disableCells();
 
                 // socket emit a value change for the cell
                 socket.emit(socketEvents.emit.playerCell, {
-                    cellRow: row,
-                    cellCol: col
+                    opponentId: opponentId,
+                    cellInfo: {
+                        cellRow: row,
+                        cellCol: col
+                    }
                 });
             }
         });
@@ -119,11 +150,11 @@ var ui = (function($, io) {
     }
 
     function hideGrid () {
-        $('.grid').addClass('hidden');
+        $('.game').addClass('hidden');
     }
 
     function showGrid () {
-        $('.grid').removeClass('hidden');
+        $('.game').removeClass('hidden');
     }
 
     function hideMenu () {
@@ -134,22 +165,40 @@ var ui = (function($, io) {
         $('.game-settings').removeClass('hidden');
     }
 
+    function showMultiplayerGameIdField () {
+        $('.game-id-holder').removeClass('hidden');
+    }
+
+    function hideMultiplayerGameIdField () {
+        $('.game-id-holder').addClass('hidden');
+    }
+
     function addOverlay () {
-        $('.wrapper').addClass('overlay');
+        $('.grid').addClass('overlay');
     }
 
     function removeOverlay () {
-        $('.wrapper').removeClass('overlay');
+        $('.grid').removeClass('overlay');
+    }
+
+    function fillInviteField (gameId) {
+        $('#multi-game-id-copy').val(gameId);
+    }
+
+    function getCellElement (cellCoords) {
+        var $rowElement = $('.row').filter('[data-number="' + cellCoords.cellRow + '"]'),
+            $cellElement = $rowElement.children().filter('[data-number="' + cellCoords.cellCol + '"]');
+        return $cellElement;
     }
 
     function setCellValue ($cell, cellValue) {
         var cellValueUrl = '';
 
-        if(cellValue == 'cross') {
+        if(cellValue == 'x') {
             cellValueUrl = './images/cross.png';
         }
-        else if(cellValue == 'circle') {
-            cellValueUrl = './images/cricle.svg';
+        else if(cellValue == 'o') {
+            cellValueUrl = './images/circle.png';
         }
 
         $cell.html('<img src="' + cellValueUrl + '" />');

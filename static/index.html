@@ -11,32 +11,40 @@
 <body>
     <div class="wrapper blue-color-back">
         <div class="game-settings text-center white-color">
+            <div class="info">
+                <p>For multiplayer mode, either just press the 'start' button to create a game, or copy and send the url of your rival player and hit 'start'.</p>
+            </div>
             <div class="game-type">
                 <select>
                     <option value="ai">Versus AI</option>
                     <option value="multi">Versus Actual Person</option>
                 </select>
-            </div>
-            <div class="info">
-                <h3>For multiplayer mode, copy and send the url to your rival player.</h3>
+                <div class="game-id-holder paste hidden">
+                    <input type="text" id="multi-game-id-paste" placeholder="Copy/Paste your friend's gameId"/>
+                </div>
             </div>
             <button class="start-game white-color-back blue-color big-btn">Start Game</button>
         </div>
-        <div class="grid hidden">
-            <div class="row" data-number="0">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
+        <div class="game text-center hidden">
+            <div class="game-id-holder hidden">
+                <input type="text" id="multi-game-id-copy" />
             </div>
-            <div class="row" data-number="1">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
-            </div>
-            <div class="row" data-number="2">
-                <div class="col" data-number="0"></div>
-                <div class="col" data-number="1"></div>
-                <div class="col" data-number="2"></div>
+            <div class="grid">
+                <div class="row" data-number="0">
+                    <div class="col" data-number="0"></div>
+                    <div class="col" data-number="1"></div>
+                    <div class="col" data-number="2"></div>
+                </div>
+                <div class="row" data-number="1">
+                    <div class="col" data-number="0"></div>
+                    <div class="col" data-number="1"></div>
+                    <div class="col" data-number="2"></div>
+                </div>
+                <div class="row" data-number="2">
+                    <div class="col" data-number="0"></div>
+                    <div class="col" data-number="1"></div>
+                    <div class="col" data-number="2"></div>
+                </div>
             </div>
         </div>
         <div class="score">
