@@ -1,3 +1,4 @@
+// Note: function needs a little more tweeking
 function euristicFunc (board, cellValue) {
     var euristicValue = 0;
     var boardDimension = 3;

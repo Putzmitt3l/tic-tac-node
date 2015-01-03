@@ -1,3 +1,4 @@
+'use strict';
 // later on an algorithm option can be added
 var algorithm = require('./algo/minimax');
 

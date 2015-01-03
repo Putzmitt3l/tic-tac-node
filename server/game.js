@@ -1,3 +1,5 @@
+'use strict';
+
 function GameException (message) {
     this.name = 'GameException';
     this.message = message || 'Unhandled GameException occurred.';
@@ -7,6 +9,8 @@ function Game (id) {
     this._matrix = [[0,0,0],[0,0,0],[0,0,0]];
     this._ply = 'x';
     this._id = id;
+    this._ready = false;
+    this._players = [];
 
     addInstanceToDictionary(this);
 };
@@ -51,6 +55,15 @@ Game.removeInstanceFromDictionary = function (instanceId) {
 // EOF Static Game functions  //
 ////////////////////////////////
 
+Game.prototype.addPlayer = function (player) {
+    if(this._players.length < 2) {
+        this._players.push(player);
+    }
+    if(this._players.length === 2) {
+        this._ready = true;
+    }
+}
+
 Game.prototype.updateState = function (ply, filledCell) {
     if(this._ply !== ply) {
         throw new GameException('Unauthorized player move');
@@ -83,7 +96,18 @@ Game.prototype.getState = function () {
     return this._matrix;
 };
 
-// TODO: add player uuids
+Game.prototype.getPlayerOneId = function () {
+    return this._players[0].getId();
+}
+
+Game.prototype.getPlayerTwoId = function () {
+    return this._players[1].getId();
+}
+
+Game.prototype.isReadyToStart = function () {
+    return this._ready;
+}
+
 // TODO: add history of moves by players
 
 module.exports = Game;
