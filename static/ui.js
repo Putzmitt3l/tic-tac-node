@@ -10,6 +10,7 @@ var ui = (function($, io) {
                 gameStarted: 'gamestarted',
                 gameEnd: 'gameover',
                 playerconnected: 'playerconnected',
+                inviteopponent: 'inviteopponent',
                 opponentCell: 'opponentcellfilled'
             },
             emit: {
@@ -48,6 +49,8 @@ var ui = (function($, io) {
             gameId = gameInfo.gameId;
             console.log('gameId: ' + gameId);
             console.log('palyerType: ' + playerType);
+
+            removeOverlay();
         });
 
         // socket listen on value change
@@ -77,11 +80,12 @@ var ui = (function($, io) {
             showGrid();
             hideMenu();
 
+            addOverlay();
+
             socket.emit(socketEvents.emit.startGame, {
-                playerId: playerId
+                playerId: playerId,
+                multiplayer: (option === 'multi')? true : undefined
             });
-            // TODO: change window.location after adding ng-rock tool
-            // change the quesry string to be generated from select option
         });
 
         $doc.on('click', '.col', function (e) {
@@ -128,6 +132,14 @@ var ui = (function($, io) {
 
     function showMenu () {
         $('.game-settings').removeClass('hidden');
+    }
+
+    function addOverlay () {
+        $('.wrapper').addClass('overlay');
+    }
+
+    function removeOverlay () {
+        $('.wrapper').removeClass('overlay');
     }
 
     function setCellValue ($cell, cellValue) {
