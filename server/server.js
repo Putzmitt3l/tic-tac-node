@@ -15,6 +15,21 @@ var paths = {
     resourcePath: path.normalize(__dirname + '/../static/')
 };
 
+var socketEvents = {
+    listen: {
+        socketConnection: 'connection',
+        startGame: 'startgame',
+        cellFilled: 'cellfilled'
+    },
+    emit: {
+        gameStarted: 'gamestarted',
+        gameEnd: 'gameover',
+        playerconnected: 'playerconnected',
+        inviteopponent: 'inviteopponent',
+        opponentCell: 'opponentcellfilled'
+    },
+};
+
 app.use(express.static(paths.resourcePath));
 
 app.get('/', function(req, res){
@@ -29,13 +44,13 @@ http.listen(3000, function(){
     console.log('listening on 3000');
 });
 
-io.on('connection', function(socket) {
+io.on(socketEvents.listen.socketConnection, function(socket) {
 
     var playerId = uuid();
     socket.socketId = playerId;
-    socket.emit('playerconnected', { playerId: playerId });
+    socket.emit(socketEvents.emit.playerconnected, { playerId: playerId });
 
-    socket.on('startgame', function (gameSettings) {
+    socket.on(socketEvents.listen.startGame, function (gameSettings) {
 
         // either we've created a new game
         // or we are joining an existing one
@@ -49,13 +64,17 @@ io.on('connection', function(socket) {
         var playerTwo = null;
 
         if(gameSettings.multiplayer) {
-            if(gameSettings.gameId) {
+            if(!gameSettings.gameId) {
                 // first player connects
                 gameId = uuid();
                 game = new Game(gameId);
                 playerOneId = uuid();
                 playerOne = new Player(playerOneId, 'x');
                 game.addPlayer(playerOne);
+
+                socket.emit(socketEvents.emit.inviteopponent, {
+                    gameId: gameId
+                });
             }
             else {
                 // second player connects
@@ -83,7 +102,7 @@ io.on('connection', function(socket) {
         if(game.isReadyToStart()) {
             // broadcast to opponents game has started
             // and who is playerOne and playerTwo
-            io.sockets.in(game.getId()).emit('gamestarted', {
+            io.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
                 gameId: game.getId(),
                 playerOne: game.getPlayerOneId(),
                 playerTwo: game.getPlayerTwoId()
@@ -95,11 +114,11 @@ io.on('connection', function(socket) {
     //     console.log('user disconnected');
     // });
 
-    socket.on('cellfilled', function(cellInfo) {
-        // console.log('message: ' + cellInfo);
-        // io.emit('chat message', cellInfo);
+    socket.on(socketEvents.listen.cellFilled, function(cellInfo) {
         console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
         // AI logic
-        io.sockets.emit('opponentcellfilled');
+        io.sockets.emit(socketEvents.emit.opponentCell, {
+
+        });
     });
 });
