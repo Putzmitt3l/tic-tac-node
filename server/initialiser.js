@@ -118,7 +118,7 @@ var initialiser = (function() {
             gameId = uuid();
             game = new Game(gameId);
             playerOne = new Player(socket.socketId, 'x', game);
-            attachSocketDelegationToPlayer(playerTwo, socket);
+            attachSocketDelegationToPlayer(playerOne, socket);
 
             var playerTwoId = uuid();
             playerTwo = new Player(playerTwoId, 'o', game, true); // use a AI to be a player

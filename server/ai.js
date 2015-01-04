@@ -1,5 +1,6 @@
 'use strict';
-// later on an algorithm option can be added
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 var miniMaxAlgorithm = require('./algo/minimax');
 
 function AiException (message) {
@@ -7,14 +8,21 @@ function AiException (message) {
     this.message = message || 'Unhandled AiException occurred.';
 };
 
-function Ai (id, cellValue, algorithm) {
+function Ai (id, cellValue, player, algorithm) {
     this._id = id;
     this._algorithm = algorithm || miniMaxAlgorithm;
     this._nextMove = {};
     this._cellValue = cellValue;
 
+    var _this = this;
+    player.on('runbot', function (newGameState) {
+        _this.makeAssessment(newGameState.gameState);
+    });
+
     addInstanceToDictionary(this);
 };
+
+util.inherits(Ai, EventEmitter);
 
 //////////////////////////
 // Static Ai functions  //
@@ -58,13 +66,9 @@ Ai.removeInstanceFromDictionary = function (instanceId) {
 
 Ai.prototype.makeAssessment = function (gameState) {
     this._nextMove = this._algorithm.generateNextMove(gameState, this._cellValue);
-};
-
-Ai.prototype.makeMove = function () {
-    return {
-        coordinates: this._nextMove,
-        value: this.__cellValue
-    };
+    this.emit('botmovemade', {
+        cellInfo: this._nextMove
+    })
 };
 
 module.exports = Ai;

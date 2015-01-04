@@ -64,7 +64,9 @@ var ui = (function($, io) {
             console.log('playerOneId: ' + gameInfo.playerOne);
             console.log('playerTwoId: ' + gameInfo.playerTwo);
 
-            removeOverlay();
+            if(playerType === 'x') {
+                removeOverlay();
+            }
         });
 
         // socket listen on value change

@@ -10,7 +10,7 @@ function PlayerException (message) {
 function Player (id, turnValue, game, useBot) {
     this._id = id;
     this._ply = turnValue;
-    this._bot = (useBot)? new Ai(id, turnValue) : null;
+    this._bot = (useBot)? new Ai(id, turnValue, this) : null;
 
     addInstanceToDictionary(this);
 
@@ -18,6 +18,12 @@ function Player (id, turnValue, game, useBot) {
     game.on('stateupdated', function (newStateData) {
         _this.makeMove.call(_this, newStateData);
     });
+
+    if(useBot) {
+        this._bot.on('botmovemade', function (newMove) {
+            _this.emit('updatestate', newMove.cellInfo);
+        });
+    }
 }
 
 util.inherits(Player, EventEmitter);
@@ -69,7 +75,8 @@ Player.removeInstanceFromDictionary = function (instanceId) {
 Player.prototype.makeMove = function (newGameState) {
     if(this.getPly() === newGameState.nextPly) {
         if(!!this._bot) {
-            // delegate cell dicision to bot
+            // Go Bot Go!
+            this.emit('runbot', newGameState);
         }
         else {
             // delegate move update to socket
