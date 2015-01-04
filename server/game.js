@@ -1,4 +1,6 @@
 'use strict';
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 
 function GameException (message) {
     this.name = 'GameException';
@@ -11,9 +13,16 @@ function Game (id) {
     this._id = id;
     this._ready = false;
     this._players = [];
+    this._gameWinner = null;
 
     addInstanceToDictionary(this);
+
+    // this.on('gameover', function (results) {
+    //     removeInstanceFromDictionary(results.game);
+    // });
 };
+
+util.inherits(Game, EventEmitter);
 
 ///////////////////////////
 // Static Game functions //
@@ -25,6 +34,10 @@ function addInstanceToDictionary (instance) {
     }
 
     Game._instancesDictionary[instance._id] = instance;
+};
+
+function removeInstanceFromDictionary (instance) {
+    Game.removeInstanceFromDictionary(instance.getId());
 };
 
 Game.getInstanceFromDictionary = function (instanceId) {
@@ -56,18 +69,22 @@ Game.removeInstanceFromDictionary = function (instanceId) {
 ////////////////////////////////
 
 Game.prototype.addPlayer = function (player) {
+    var _this = this;
     if(this._players.length < 2) {
         this._players.push(player);
+
+        player.on('updatestate', function(filledCell) {
+            _this.updateState.call(_this, filledCell);
+        });
     }
     if(this._players.length === 2) {
         this._ready = true;
     }
 }
 
-Game.prototype.updateState = function (ply, filledCell) {
-    if(this._ply !== ply) {
-        throw new GameException('Unauthorized player move');
-    }
+Game.prototype.updateState = function (filledCell) {
+    var previousPly = this._ply;
+
     var newCellValue = (this._ply === 'x')? 1 : 2;
     this._matrix[filledCell.cellRow][filledCell.cellCol] = newCellValue;
 
@@ -75,13 +92,32 @@ Game.prototype.updateState = function (ply, filledCell) {
         this._ply = 'o';
     }
     else {
-        this._ply === 'x';
+        this._ply = 'x';
     }
+
+    var isGameEnded = this.checkForGameEnd();
+
+    if(isGameEnded) {
+        this.emit('gameover', {
+            winner: this._gameWinner,
+            game: this
+        });
+    }
+    else {
+        this.emit('stateupdated', {
+            previousPly: previousPly,
+            previousFilledCell: filledCell,
+            nextPly: this._ply,
+            gameState: this._matrix
+        });
+    }
+
 };
 
 Game.prototype.checkForGameEnd = function () {
     // TODO: check if any of the win positions are present
     // check if all the cells are filled and call draw
+    return false;
 };
 
 Game.prototype.getId = function () {

@@ -50,7 +50,7 @@ Ai.removeInstanceFromDictionary = function (instanceId) {
     Ai._instancesDictionary[instanceId] = undefined;
 
     return removedInstance;
-}
+};
 
 /////////////////////////////
 // EOF Static Ai functions //
