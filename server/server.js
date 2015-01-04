@@ -40,13 +40,13 @@ http.listen(3000, function(){
 });
 
 io.on(socketEvents.listen.socketConnection, function(socket) {
-
     var playerId = uuid();
     socket.socketId = playerId;
     socket.emit(socketEvents.emit.playerconnected, { playerId: playerId });
 
+    // TODO: add check if game is already full
+    // Add handling if game is already full
     socket.on(socketEvents.listen.startGame, function (gameSettings) {
-
         // either we've created a new game
         // or we are joining an existing one
         var gameId = null;
@@ -100,7 +100,7 @@ io.on(socketEvents.listen.socketConnection, function(socket) {
                 playerTwo: game.getPlayerTwoId()
             });
         }
-    })
+    });
 
     // socket.on('disconnect', function() {
     //     console.log('user disconnected');
