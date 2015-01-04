@@ -131,6 +131,7 @@ var ui = (function($, io) {
 
                 // socket emit a value change for the cell
                 socket.emit(socketEvents.emit.playerCell, {
+                    playerId: playerId,
                     opponentId: opponentId,
                     cellInfo: {
                         cellRow: row,

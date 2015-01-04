@@ -21,7 +21,7 @@ var initialiser = (function() {
     };
 
     var initialiserModule = {
-        this._socketsDictionary: {},
+        _socketsDictionary: {},
     };
 
     initialiserModule._addSocket = function (socketId, socketObj) {
@@ -126,7 +126,7 @@ var initialiser = (function() {
         if(game.isReadyToStart()) {
             // broadcast to opponents game has started
             // and who is playerOne and playerTwo
-            io.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
+            initialiserModule._socketIoModule.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
                 gameId: game.getId(),
                 playerOne: game.getPlayerOneId(),
                 playerTwo: game.getPlayerTwoId()
@@ -138,12 +138,10 @@ var initialiser = (function() {
         var socketId = plyInfo.playerId;
         var socket = initialiserModule._getSocketById(socketId);
 
-        socket.on(socketEvents.listen.cellFilled, function(plyInfo) {
-            // console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
-            // AI logic
-            socket.broadcast.emit(socketEvents.emit.opponentCell, {
-                opponentCell: plyInfo.cellInfo
-            });
+        // console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
+        // AI logic
+        socket.broadcast.emit(socketEvents.emit.opponentCell, {
+            opponentCell: plyInfo.cellInfo
         });
     }
 
