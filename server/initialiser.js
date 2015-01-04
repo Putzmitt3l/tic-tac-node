@@ -92,7 +92,9 @@ var initialiser = (function() {
                 // first player connects
                 gameId = uuid();
                 game = new Game(gameId);
-                playerOne = new Player(socket.socketId, 'x');
+                playerOne = new Player(socket.socketId, 'x', game);
+                attachSocketDelegationToPlayer(playerOne, game, socket);
+
                 game.addPlayer(playerOne);
 
                 socket.emit(socketEvents.emit.inviteopponent, {
@@ -104,7 +106,9 @@ var initialiser = (function() {
             else {
                 // second player connects
                 game = Game.getInstanceFromDictionary(gameSettings.gameId);
-                playerTwo = new Player(socket.socketId, 'o');
+                playerTwo = new Player(socket.socketId, 'o', game);
+                attachSocketDelegationToPlayer(playerTwo, game, socket);
+
                 game.addPlayer(playerTwo);
 
                 socket.join(gameSettings.gameId);
@@ -113,9 +117,11 @@ var initialiser = (function() {
         else {
             gameId = uuid();
             game = new Game(gameId);
-            playerOne = new Player(socket.socketId, 'x');
+            playerOne = new Player(socket.socketId, 'x', game);
+            attachSocketDelegationToPlayer(playerTwo, game, socket);
+
             var playerTwoId = uuid();
-            playerTwo = new Player(playerTwoId, 'o', true); // use a AI to be a player
+            playerTwo = new Player(playerTwoId, 'o', game, true); // use a AI to be a player
 
             game.addPlayer(playerOne);
             game.addPlayer(playerTwo);
@@ -135,13 +141,14 @@ var initialiser = (function() {
     }
 
     function turnHandler (plyInfo) {
-        var socketId = plyInfo.playerId;
-        var socket = initialiserModule._getSocketById(socketId);
+        var player = Player.getInstanceFromDictionary(plyInfo.playerId);
+        player.emit('updatestate', plyInfo.cellInfo);
+    }
 
-        // console.log('['+ cellInfo.cellRow + ',' + cellInfo.cellCol + ']');
-        // AI logic
-        socket.broadcast.emit(socketEvents.emit.opponentCell, {
-            opponentCell: plyInfo.cellInfo
+    function attachSocketDelegationToPlayer (player, game, socket) {
+        player.on('sendthroughsocket', function (dataToSend) {
+            // console.log('sent via socket');
+            socket.emit(socketEvents.emit.opponentCell, dataToSend);
         });
     }
 
