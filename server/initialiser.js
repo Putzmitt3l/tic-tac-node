@@ -93,7 +93,7 @@ var initialiser = (function() {
                 gameId = uuid();
                 game = new Game(gameId);
                 playerOne = new Player(socket.socketId, 'x', game);
-                attachSocketDelegationToPlayer(playerOne, game, socket);
+                attachSocketDelegationToPlayer(playerOne, socket);
 
                 game.addPlayer(playerOne);
 
@@ -107,7 +107,7 @@ var initialiser = (function() {
                 // second player connects
                 game = Game.getInstanceFromDictionary(gameSettings.gameId);
                 playerTwo = new Player(socket.socketId, 'o', game);
-                attachSocketDelegationToPlayer(playerTwo, game, socket);
+                attachSocketDelegationToPlayer(playerTwo, socket);
 
                 game.addPlayer(playerTwo);
 
@@ -118,7 +118,7 @@ var initialiser = (function() {
             gameId = uuid();
             game = new Game(gameId);
             playerOne = new Player(socket.socketId, 'x', game);
-            attachSocketDelegationToPlayer(playerTwo, game, socket);
+            attachSocketDelegationToPlayer(playerTwo, socket);
 
             var playerTwoId = uuid();
             playerTwo = new Player(playerTwoId, 'o', game, true); // use a AI to be a player
@@ -145,7 +145,7 @@ var initialiser = (function() {
         player.emit('updatestate', plyInfo.cellInfo);
     }
 
-    function attachSocketDelegationToPlayer (player, game, socket) {
+    function attachSocketDelegationToPlayer (player, socket) {
         player.on('sendthroughsocket', function (dataToSend) {
             // console.log('sent via socket');
             socket.emit(socketEvents.emit.opponentCell, dataToSend);
