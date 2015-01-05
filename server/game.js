@@ -116,6 +116,7 @@ Game.prototype.updateState = function (filledCell) {
     }
 };
 
+
 Game.prototype.checkForGameEnd = function () {
     var assessmentResult = assessment.checkForWin(this.getState());
 
