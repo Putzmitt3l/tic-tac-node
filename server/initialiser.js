@@ -137,6 +137,11 @@ var initialiser = (function() {
                 playerOne: game.getPlayerOneId(),
                 playerTwo: game.getPlayerTwoId()
             });
+
+            game.on('gameover', function (gameOverInfo) {
+                console.log(gameOverInfo.winner);
+                // TODO: add emiting to sockets the winner of the game and destroy the game object
+            });
         }
     }
 

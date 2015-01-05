@@ -10,7 +10,7 @@ function PlayerException (message) {
 function Player (id, turnValue, game, useBot) {
     this._id = id;
     this._ply = turnValue;
-    this._bot = (useBot)? new Ai(id, turnValue, this) : null;
+    this._bot = null;
 
     addInstanceToDictionary(this);
 
@@ -20,6 +20,8 @@ function Player (id, turnValue, game, useBot) {
     });
 
     if(useBot) {
+        var cellValue = (turnValue === 'x')? 1 : 2;
+        this._bot = new Ai(id, cellValue, this);
         this._bot.on('botmovemade', function (newMove) {
             _this.emit('updatestate', newMove.cellInfo);
         });
