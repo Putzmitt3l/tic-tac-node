@@ -64,6 +64,11 @@ var initialiser = (function() {
         return socketId;
     }
 
+    /**
+     * Subscribes a socket for gameStart and makeTurn events emitted from
+     * the client currently connected to server
+     * @param  {uuidString} socketId
+     */
     function monitorSocket (socketId) {
         var socket = initialiserModule._getSocketById(socketId);
         if(!!socket) {
@@ -72,6 +77,12 @@ var initialiser = (function() {
         }
     }
 
+    /**
+     * Handles the 'GameStart' event emitted from the client.
+     * Depending on the given parameters client might play singlePlayer with a bot,
+     * or multiplayer in which case a new Game is created or player joins an existing game
+     * @param  {Object} gameSettings
+     */
     function statGameHandler (gameSettings) {
         // TODO: add check if game is already full
         // Add handling if game is already full
@@ -89,6 +100,13 @@ var initialiser = (function() {
         }
     }
 
+    /**
+     * Creates a new game on first player connection.
+     * Attaches socket delegation hanler to player and game start/end handlers to game
+     * Emits to the client that he can invite a friend and joins the client's socket to
+     * a room with the same Id as the created game
+     * @param  {Object} gameSettings
+     */
     function connectFirstPlayer (gameSettings) {
         var socketId = gameSettings.playerId;
         var socket = initialiserModule._getSocketById(socketId);
@@ -109,6 +127,11 @@ var initialiser = (function() {
         socket.join(gameId);
     }
 
+    /**
+     * Player joins an existing game by a given gameId from the gameSettings object.
+     * Attaches the socket to the player class and joins the room.
+     * @param  {Object} gameSettings
+     */
     function connectSecondPlayer (gameSettings) {
         var socketId = gameSettings.playerId;
         var socket = initialiserModule._getSocketById(socketId);
@@ -124,6 +147,12 @@ var initialiser = (function() {
         game.addPlayer(playerTwo);
     }
 
+    /**
+     * Instantiates a new Game on client connection and creates an AI witch
+     * which the player can interract in the game. Similar initialisations
+     * are made like in 'connectFirstPlayer' function.
+     * @param  {Object} gameSettings
+     */
     function connectPlayerWithBot (gameSettings) {
         var socketId = gameSettings.playerId;
         var socket = initialiserModule._getSocketById(socketId);
@@ -146,11 +175,25 @@ var initialiser = (function() {
         game.addPlayer(playerTwo);
     }
 
+    /**
+     * Handles the clients turn and delegates it to the assigned-to-the-socket Player
+     * object, which updates the game state
+     * @param  {Object} plyInfo      players' turn information
+     */
     function turnHandler (plyInfo) {
         var player = Player.getInstanceFromDictionary(plyInfo.playerId);
         player.emit('updatestate', plyInfo.cellInfo);
     }
 
+    //////////////////////////////////////////////////////////////////////////////////
+    // Helper functions for attaching the event handlers to player and game objects //
+    //////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Attaches socket emitting to a particular player object.
+     * @param  {Player} player
+     * @param  {Socket} socket
+     */
     function attachSocketDelegationToPlayer (player, socket) {
         player.on('sendthroughsocket', function (dataToSend) {
             // console.log('sent via socket');
@@ -158,6 +201,12 @@ var initialiser = (function() {
         });
     }
 
+    /**
+     * Attaches client's socket notifications for game start/end.
+     * Messages are emitted to all sockets in a particular room, whether the game
+     * is in singlePlayer mode or multiplayer.
+     * @param  {Game} game
+     */
     function attachGameStartEndHandlers (game) {
         game.on('gamestart', function () {
             initialiserModule._socketIoModule.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
