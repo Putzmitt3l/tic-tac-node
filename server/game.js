@@ -78,6 +78,13 @@ Game.prototype.addPlayer = function (player) {
         player.on('updatestate', function(filledCell) {
             _this.updateState.call(_this, filledCell);
         });
+
+        player.on('quit', function() {
+            _this.emit('gameover', {
+                winner: 'draw',
+                game: _this
+            });
+        });
     }
     if(this._players.length === 2) {
         this._ready = true;

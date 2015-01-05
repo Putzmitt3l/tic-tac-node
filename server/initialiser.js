@@ -8,6 +8,7 @@ var initialiser = (function() {
     var socketEvents = {
         listen: {
             socketConnection: 'connection',
+            socketDisconnect: 'disconnect',
             startGame: 'startgame',
             cellFilled: 'cellfilled'
         },
@@ -74,6 +75,13 @@ var initialiser = (function() {
         if(!!socket) {
             socket.on(socketEvents.listen.startGame, statGameHandler);
             socket.on(socketEvents.listen.cellFilled, turnHandler);
+
+            // Case when player drops out of a game
+            // TODO: check 'disconnect' firing issue
+            // socket.on(socketEvents.listen.socketDisconnect, function () {
+            //     var player = Player.getInstanceFromDictionary(socket.socketId);
+            //     player.emit('quit');
+            // });
         }
     }
 
@@ -84,15 +92,18 @@ var initialiser = (function() {
      * @param  {Object} gameSettings
      */
     function statGameHandler (gameSettings) {
-        // TODO: add check if game is already full
-        // Add handling if game is already full
-
         if(gameSettings.multiplayer) {
             if(!gameSettings.gameId) {
                 connectFirstPlayer(gameSettings);
             }
             else {
-                connectSecondPlayer(gameSettings);
+                var game = Game.getInstanceFromDictionary(gameSettings.gameId);
+                if(!!game && !game.isReadyToStart()) {
+                    connectSecondPlayer(gameSettings);
+                }
+                else {
+                    // TODO: add a handler to kick third player
+                }
             }
         }
         else {
