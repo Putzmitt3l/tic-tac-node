@@ -32,6 +32,13 @@ If it's controlled by a human emits ``sendthroughsocket`` that is handled by the
 * When move is finished emits ``botmovemade`` event that is handled by the player class(Delegates the new
 filledCell to the Game class which updates the state).
 
+## Small Disclaimer about the AI
+
+* The Euristic function used for the board evalutaion is a naive one. Quite possibly there's a better one.
+* Bot only gets to look 3 moves ahead and thus doesn't always make the
+best decision due to the short predictions.
+* The State Tree is always generated from [top,left] to [bottom,right],
+and that can be used for devising a counter strategy.
 
 ## Start-up
 
