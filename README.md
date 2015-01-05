@@ -1,5 +1,4 @@
 #tic-tac-node
-============
 
 We have 3 classes:
 
@@ -33,4 +32,23 @@ If it's controlled by a human emits ``sendthroughsocket`` that is handled by the
 * When move is finished emits ``botmovemade`` event that is handled by the player class(Delegates the new
 filledCell to the Game class which updates the state).
 
+
+## Start-up
+
+* Clone repo
+* Open terminal and navigate to ``/downloadFoleder/tic-tac-node``
+* Run ``npm install``
+* Navigate to ``server`` subfolder and run ``node server.js``
+* Open in browser ``localhost:3000``
+
+__For single player__
+
+* Just choose ``Versus AI`` option and press ``Start Game``
+
+__For multiplayer__
+
+* Open another browser instance and type again ``localhost:3000``
+* Select in first browser instance ``Versus Human`` and press ``Start Game``
+* Copy the ``gameId`` from the input field above the game grid
+* Select in second broser instance ``Versus Human`` and paste the copied ``gameId``. Press ``Start Game``
 

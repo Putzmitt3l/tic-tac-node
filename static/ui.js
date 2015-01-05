@@ -143,6 +143,34 @@ var ui = (function($, io) {
         });
     }
 
+    function setCellValue ($cell, cellValue) {
+        var cellValueUrl = '';
+
+        if(cellValue == 'x') {
+            cellValueUrl = './images/cross.png';
+        }
+        else if(cellValue == 'o') {
+            cellValueUrl = './images/circle.png';
+        }
+
+        $cell.html('<img src="' + cellValueUrl + '" />');
+        $cell.addClass(uiClasses.cell.taken);
+    }
+
+    function getCellElement (cellCoords) {
+        var $rowElement = $('.row').filter('[data-number="' + cellCoords.cellRow + '"]'),
+            $cellElement = $rowElement.children().filter('[data-number="' + cellCoords.cellCol + '"]');
+        return $cellElement;
+    }
+
+    function disableCells () {
+        $('.col').addClass(uiClasses.cell.disabled);
+    }
+
+    function enableCells () {
+        $('.col').removeClass(uiClasses.cell.disabled);
+    }
+
     function hideGrid () {
         $('.game').addClass('hidden');
     }
@@ -182,34 +210,6 @@ var ui = (function($, io) {
 
     function fillInviteField (gameId) {
         $('#multi-game-id-copy').val(gameId);
-    }
-
-    function getCellElement (cellCoords) {
-        var $rowElement = $('.row').filter('[data-number="' + cellCoords.cellRow + '"]'),
-            $cellElement = $rowElement.children().filter('[data-number="' + cellCoords.cellCol + '"]');
-        return $cellElement;
-    }
-
-    function setCellValue ($cell, cellValue) {
-        var cellValueUrl = '';
-
-        if(cellValue == 'x') {
-            cellValueUrl = './images/cross.png';
-        }
-        else if(cellValue == 'o') {
-            cellValueUrl = './images/circle.png';
-        }
-
-        $cell.html('<img src="' + cellValueUrl + '" />');
-        $cell.addClass(uiClasses.cell.taken);
-    }
-
-    function disableCells () {
-        $('.col').addClass(uiClasses.cell.disabled);
-    }
-
-    function enableCells () {
-        $('.col').removeClass(uiClasses.cell.disabled);
     }
 
     return ui;
