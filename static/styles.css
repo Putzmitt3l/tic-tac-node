@@ -62,7 +62,7 @@ h1 {
 
 .grid.overlay:after {
     display: block;
-    content: 'LoAdIng!';
+    content: '';
     position: absolute;
 
     left: 0;
@@ -129,6 +129,10 @@ img {
     border-width: 1px;
 }
 
+
+.score {
+    font-size: 20px;
+}
 
 /* COLORING */
 

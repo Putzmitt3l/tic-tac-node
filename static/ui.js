@@ -74,15 +74,14 @@ var ui = (function($, io) {
             // set server cell filled
             var $cell = getCellElement(data.opponentCell);
             setCellValue($cell, opponentType);
+            removeOverlay();
             enableCells();
         });
 
         // socket listen on gameover
         socket.on(socketEvents.listen.gameEnd, function (endObject) {
-            // show/update score board
-
-            // prompt user to
-            // leave/restart/choose-another-option
+            addOverlay();
+            displayWinner(endObject.winner);
         });
     }
     ui.init();
@@ -142,14 +141,6 @@ var ui = (function($, io) {
                 });
             }
         });
-
-        $doc.on('click', '.score', function (e) {
-
-        });
-
-        $doc.on('click', '.controls', function (e) {
-
-        });
     }
 
     function hideGrid () {
@@ -182,6 +173,11 @@ var ui = (function($, io) {
 
     function removeOverlay () {
         $('.grid').removeClass('overlay');
+    }
+
+    function displayWinner (winner) {
+        $('.score').html('Winner is:' + winner)
+                .removeClass('hidden');
     }
 
     function fillInviteField (gameId) {
