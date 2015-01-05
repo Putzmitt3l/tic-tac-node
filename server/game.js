@@ -81,6 +81,8 @@ Game.prototype.addPlayer = function (player) {
     }
     if(this._players.length === 2) {
         this._ready = true;
+
+        this.emit('gamestart');
     }
 }
 

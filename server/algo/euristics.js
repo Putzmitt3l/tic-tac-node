@@ -1,6 +1,6 @@
 var assessment = require('../assessment');
 
-// Note: function needs a little more tweeking
+// Note: it's a very naive euristic function
 function euristicFunc (board, cellValue) {
     var euristicValue = 0;
     var boardDimension = 3;
