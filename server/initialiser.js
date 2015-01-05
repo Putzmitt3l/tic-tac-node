@@ -76,73 +76,74 @@ var initialiser = (function() {
         // TODO: add check if game is already full
         // Add handling if game is already full
 
-        // either we've created a new game
-        // or we are joining an existing one
-        var gameId = null;
-        var game = null;
-
-        var playerOne = null;
-        var playerTwo = null;
-
-        var socketId = gameSettings.playerId;
-        var socket = initialiserModule._getSocketById(socketId);
-
         if(gameSettings.multiplayer) {
             if(!gameSettings.gameId) {
-                // first player connects
-                gameId = uuid();
-                game = new Game(gameId);
-                playerOne = new Player(socket.socketId, 'x', game);
-                attachSocketDelegationToPlayer(playerOne, socket);
-
-                game.addPlayer(playerOne);
-
-                socket.emit(socketEvents.emit.inviteopponent, {
-                    gameId: gameId
-                });
-
-                socket.join(gameId);
+                connectFirstPlayer(gameSettings);
             }
             else {
-                // second player connects
-                game = Game.getInstanceFromDictionary(gameSettings.gameId);
-                playerTwo = new Player(socket.socketId, 'o', game);
-                attachSocketDelegationToPlayer(playerTwo, socket);
-
-                game.addPlayer(playerTwo);
-
-                socket.join(gameSettings.gameId);
+                connectSecondPlayer(gameSettings);
             }
         }
         else {
-            gameId = uuid();
-            game = new Game(gameId);
-            playerOne = new Player(socket.socketId, 'x', game);
-            attachSocketDelegationToPlayer(playerOne, socket);
-
-            var playerTwoId = uuid();
-            playerTwo = new Player(playerTwoId, 'o', game, true); // use a AI to be a player
-
-            game.addPlayer(playerOne);
-            game.addPlayer(playerTwo);
-
-            socket.join(gameId);
+            connectPlayerWithBot(gameSettings);
         }
+    }
 
-        if(game.isReadyToStart()) {
-            // broadcast to opponents game has started
-            // and who is playerOne and playerTwo
-            initialiserModule._socketIoModule.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
-                gameId: game.getId(),
-                playerOne: game.getPlayerOneId(),
-                playerTwo: game.getPlayerTwoId()
-            });
+    function connectFirstPlayer (gameSettings) {
+        var socketId = gameSettings.playerId;
+        var socket = initialiserModule._getSocketById(socketId);
 
-            game.on('gameover', function (gameOverInfo) {
-                console.log(gameOverInfo.winner);
-                // TODO: add emiting to sockets the winner of the game and destroy the game object
-            });
-        }
+        var gameId = uuid();
+        var game = new Game(gameId);
+        var playerOne = new Player(socket.socketId, 'x', game);
+        attachSocketDelegationToPlayer(playerOne, socket);
+
+        game.addPlayer(playerOne);
+
+        attachGameStartEndHandlers(game);
+
+        socket.emit(socketEvents.emit.inviteopponent, {
+            gameId: gameId
+        });
+
+        socket.join(gameId);
+    }
+
+    function connectSecondPlayer (gameSettings) {
+        var socketId = gameSettings.playerId;
+        var socket = initialiserModule._getSocketById(socketId);
+
+        var game = Game.getInstanceFromDictionary(gameSettings.gameId);
+        var playerTwo = new Player(socket.socketId, 'o', game);
+        attachSocketDelegationToPlayer(playerTwo, socket);
+
+        socket.join(gameSettings.gameId);
+
+        // Note: player's socket must be added to socket room before
+        // player enters the game
+        game.addPlayer(playerTwo);
+    }
+
+    function connectPlayerWithBot (gameSettings) {
+        var socketId = gameSettings.playerId;
+        var socket = initialiserModule._getSocketById(socketId);
+
+        var gameId = uuid();
+        var game = new Game(gameId);
+        attachGameStartEndHandlers(game);
+
+        var playerOne = new Player(socket.socketId, 'x', game);
+        attachSocketDelegationToPlayer(playerOne, socket);
+
+        var playerTwoId = uuid();
+        var playerTwo = new Player(playerTwoId, 'o', game, true); // use a AI to be a player
+
+        socket.join(gameId);
+
+        // Note: player's socket must be added to socket room before
+        // player enters the game
+        game.addPlayer(playerOne);
+        game.addPlayer(playerTwo);
     }
 
     function turnHandler (plyInfo) {
@@ -154,6 +155,26 @@ var initialiser = (function() {
         player.on('sendthroughsocket', function (dataToSend) {
             // console.log('sent via socket');
             socket.emit(socketEvents.emit.opponentCell, dataToSend);
+        });
+    }
+
+    function attachGameStartEndHandlers (game) {
+        game.on('gamestart', function () {
+            initialiserModule._socketIoModule.sockets.in(game.getId()).emit(socketEvents.emit.gameStarted, {
+                gameId: game.getId(),
+                playerOne: game.getPlayerOneId(),
+                playerTwo: game.getPlayerTwoId()
+            });
+        });
+
+        game.on('gameover', function (gameOverInfo) {
+            initialiserModule._socketIoModule.sockets.in(game.getId()).emit(socketEvents.emit.gameEnd, {
+                winner: gameOverInfo.winner
+            });
+
+            Player.removeInstanceFromDictionary(game.getPlayerOneId);
+            Player.removeInstanceFromDictionary(game.getPlayerTwoId);
+            Game.removeInstanceFromDictionary(gameOverInfo.game.getId());
         });
     }
 
