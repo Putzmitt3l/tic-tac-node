@@ -20,7 +20,7 @@ function checkForWin (board) {
 
         attachWin(result, board[0][0]);
     }
-    else if(checkDiagonal(board, board[0][2], true) === 3 &&
+    else if(checkReverseDiagonal(board, board[0][2]) === 3 &&
         board[0][2] !== 0) {
 
         attachWin(result, board[0][2]);
@@ -61,39 +61,38 @@ function checkCol (board, col, cell) {
 };
 
 function checkDiagonal (board, cell, checkOpposite) {
-    var euriCheckVal = 0;
-    if(!!checkOpposite) {
-        // check normal diagonal
-        for (var i = 0; i < 3; i++) {
-            if (board[i][i] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[i][i] !== cell && board[i][i] !== 0) {
-                euriCheckVal--;
-            }
-        };
-    }
-    else {
-        // check reverse diagonal
-        for (var i = 2; i >= 0; i--) {
-            var j = i -2;
-            if(j < 0) {
-                j = -j;
-            }
-            if (board[i][j] === cell) {
-                euriCheckVal++;
-            }
-            else if(board[i][j] !== cell && board[i][j] !== 0) {
-                euriCheckVal--;
-            }
-        };
-    }
-    return euriCheckVal;
+    var sameAsCellCounter = 0;
+    for (var i = 0; i < 3; i++) {
+        if (board[i][i] === cell) {
+            sameAsCellCounter++;
+        }
+        else if(board[i][i] !== cell && board[i][i] !== 0) {
+            sameAsCellCounter--;
+        }
+    };
+    return sameAsCellCounter;
+}
+
+function checkReverseDiagonal(board, cell) {
+    var sameAsCellCounter = 0;
+    var j = 0;
+    for (var i = 2; i >= 0; i--) {
+        if (board[i][j] === cell) {
+            sameAsCellCounter++;
+        }
+        else if(board[i][j] !== cell && board[i][j] !== 0) {
+            sameAsCellCounter--;
+        }
+
+        j++;
+    };
+    return sameAsCellCounter;
 }
 
 module.exports = {
     checkRow: checkRow,
     checkCol: checkCol,
     checkDiagonal: checkDiagonal,
+    checkReverseDiagonal: checkReverseDiagonal,
     checkForWin: checkForWin
 }

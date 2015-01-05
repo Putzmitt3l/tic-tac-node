@@ -10,7 +10,7 @@ function euristicFunc (board, cellValue) {
     };
 
     euristicValue += assessment.checkDiagonal(board, cellValue);
-    euristicValue += assessment.checkDiagonal(board, cellValue, true);
+    euristicValue += assessment.checkReverseDiagonal(board, cellValue);
 
     return euristicValue;
 };
