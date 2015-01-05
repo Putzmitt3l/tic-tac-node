@@ -35,16 +35,19 @@ var ui = (function($, io) {
 
         attachClickHandlers(socket);
 
+        // save assigned socket id for later use
         socket.on(socketEvents.listen.playerconnected, function (data) {
             playerId = data.playerId;
 
             console.log('playerId: ' + playerId);
         });
 
+        // set emitted gameId(room) in inviteField for copy/paste
         socket.on(socketEvents.listen.inviteopponent, function (invite) {
             fillInviteField(invite.gameId);
         });
 
+        // save initial game information when both players are in game/room
         socket.on(socketEvents.listen.gameStarted, function (gameInfo) {
             if(gameInfo.playerOne === playerId) {
                 playerType = 'x';
@@ -100,6 +103,8 @@ var ui = (function($, io) {
 
             addOverlay();
 
+            // send to server that player is ready to start the game
+            // whether he is player1 or player2
             socket.emit(socketEvents.emit.startGame, {
                 playerId: playerId,
                 multiplayer: (option === 'multi')? true : undefined,
@@ -142,6 +147,10 @@ var ui = (function($, io) {
             }
         });
     }
+
+    /////////////////////////
+    // UI Helper functions //
+    /////////////////////////
 
     function setCellValue ($cell, cellValue) {
         var cellValueUrl = '';
