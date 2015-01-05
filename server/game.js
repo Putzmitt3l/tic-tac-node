@@ -1,6 +1,7 @@
 'use strict';
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
+var assessment = require('./assessment');
 
 function GameException (message) {
     this.name = 'GameException';
@@ -12,6 +13,7 @@ function Game (id) {
     this._ply = 'x';
     this._id = id;
     this._ready = false;
+    this._filledCellsCounter = 0;
     this._players = [];
     this._gameWinner = null;
 
@@ -87,6 +89,7 @@ Game.prototype.updateState = function (filledCell) {
 
     var newCellValue = (this._ply === 'x')? 1 : 2;
     this._matrix[filledCell.cellRow][filledCell.cellCol] = newCellValue;
+    this._filledCellsCounter++;
 
     if(this._ply === 'x') {
         this._ply = 'o';
@@ -111,12 +114,15 @@ Game.prototype.updateState = function (filledCell) {
             gameState: this._matrix
         });
     }
-
 };
 
 Game.prototype.checkForGameEnd = function () {
-    // TODO: check if any of the win positions are present
-    // check if all the cells are filled and call draw
+    var assessmentResult = assessment.checkForWin(this.getState());
+
+    if(assessmentResult.isWon || this._filledCellsCounter === 9) {
+        this._gameWinner = assessmentResult.winner || 'draw';
+        return true;
+    }
     return false;
 };
 
